@@ -1,52 +1,56 @@
-// str.cpp
-
 #include "str.h"
 #include <cstring>
 
-str::str() 
+str::str() //default constructor
 {
   _buf = nullptr;
   _n = 0;
+  //cout << "String created.\n"; //for testing purposes
 }
 
-str::str(char ch)
+str::str(char ch) //character constructor
 {
    _n = 1;
-  _buf = new char[_n];
+  _buf = new char[_n+1];
   _buf[0] = ch;
+  //cout << "String created.\n"; //for testing purposes
 }
 
-str::str(const char* c_str)
+str::str(const char* c_str) //c-string constructor
 {
   _n = strlen(c_str);
-  _buf = new char[_n];
+  _buf = new char[_n+1];
   for (int i = 0; i < _n; ++i) 
     _buf[i] = c_str[i];
+  //cout << "String created.\n"; //for testing purposes
+
 }
-str::str(const str &s)
+str::str(const str &s) //copy constructor
 {
   _n = s._n;
-  _buf = new char[_n];
+  _buf = new char[_n+1];
   for (int i = 0; i < _n; ++i) 
     _buf[i] = s._buf[i];
+  //cout << "String created.\n"; //for testing purposes
 }
 
-str::~str()
+str::~str() //destructor
 {
   if (_buf) 
     delete [] _buf;
   _n = 0;
   _buf = nullptr;
+  //cout << "String deleted.\n"; //for testing purposes
 }
 
-void str::print()
+void str::print() //print method
 {
   for (int i = 0; i < _n; ++i) 
     cout << _buf[i];
   cout << endl;
 }
 
-void str::clear()
+void str::clear() //erase contents in string
 {
   if (_buf) 
     delete [] _buf;
@@ -55,9 +59,9 @@ void str::clear()
   _n = 0;
 }
 
-void str::append(const str & s)
+void str::append(const str & s) //append one given string to the end of another string
 {
-  char *p = new char[_n + s._n];
+  char *p = new char[_n + s._n +1];
 
   int i;
   
@@ -74,7 +78,7 @@ void str::append(const str & s)
   _n = _n + s._n;
 }
 
-void swap(str& x, str& y)
+void swap(str& x, str& y) //swap two given strings
 {
   char *tmp;
   int ntmp;
@@ -89,4 +93,36 @@ void swap(str& x, str& y)
   
 }
 
+//Sam added operators
+str & str::operator=(const str &s){ //set left hand string equal to right hand string
+  if (_buf) 
+    delete [] _buf;
+  _buf = new char[s._n+1];
+  _n = s._n;
+  strcpy(_buf, s._buf);
+  return *this;
+}
 
+str str::operator+(str &s) const{ //returns concatenation of two strings
+  str temp; //Why is there no & after the & return type?
+  temp._n = _n + s._n;
+  temp._buf = new char[temp._n+1];
+  for (int i = 0; i < _n; ++i) 
+    temp._buf[i] = _buf[i];
+  for (int i = 0; i < s._n; ++i) 
+    temp._buf[i+_n] = s._buf[i];
+  return temp;
+}
+
+ostream & operator<<(ostream & os, const str &s){ //cout operator
+    os << s._buf;
+  return os;
+}
+
+istream & operator>>(istream & is, str &s){ //cin operator (does not support spaces)
+  char tmp_text[200];
+  is >> tmp_text;
+  //create temporary string to be returned
+  s = str(tmp_text);
+  return is;
+}
